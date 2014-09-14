@@ -131,7 +131,7 @@ While the original data set has 561 variables, we are collecting only the 79 mea
 79. fBodyBodyGyroJerkMag-meanFreq()
 
 ##Summary of Refined Data
-The refined data, **tidy,** is a  [180 x 81] data frame grouped by **Subject** and sub-grouped by **Activity,** and each entry followed by a vector of 79 mean and standard deviation Time and Frequency domain variables.
+The refined data, **tidy,** is a  [180 x 81] data frame grouped by **Subject** and sub-grouped by **Activity,** and each entry followed by a vector of 79 mean and standard deviation Time and Frequency domain averages.
 
 a small section  of the *tidy* data is shown below:
 
