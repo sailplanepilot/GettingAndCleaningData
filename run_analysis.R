@@ -58,7 +58,7 @@ for (i in 1:nrow(act_labels)) {
     activities<-replace(activities,activities==i,act_labels[i,])
 }
 # a quick (optional) check to confirm equal number of rows
-# nrow(x_df) == nrow(subjects) & nrow(x_df) == nrow(activities)
+# nrow(x) == nrow(subjects) & nrow(x) == nrow(activities)
 #
 # Join into one DF and make a little easier to work with using dplyr
 mytable<-tbl_df(cbind(subjects,activities,x))
