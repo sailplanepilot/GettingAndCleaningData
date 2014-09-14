@@ -79,7 +79,7 @@ At this point, one can conduct a quick check to confirm an equal number of rows 
 # nrow(x) == nrow(subjects) & nrow(x) == nrow(activities)
 ```
 
-We join the the **subjects** and **activities** with the data (**x**) into one DF using *cbind* and make a little easier to work with using dplyr's *tbl_df* at the dame time.
+We join the **subjects** and **activities** with the data (**x**) into one DF using *cbind* and make it a little easier to work with using dplyr's *tbl_df* at the dame time.
 ```
 mytable<-tbl_df(cbind(subjects,activities,x))
 ```
@@ -96,7 +96,7 @@ write.table(tidy,file="./tidy_data.txt",row.name=FALSE)
 ```
 
 ##Summary of Refined Data
-The refined data, **tidy,** is a  [180 x 81] data frame grouped by **Subject** and sub-grouped by **Activity,** and each entry followed by a vector of 79 mean and standard deviation Time and Frequency domain variables.
+The refined data, **tidy,** is a  [180 x 81] data frame grouped by **Subject** and sub-grouped by **Activity,** and each entry followed by a vector of 79 mean and standard deviation Time and Frequency domain averages.
 
 A small section  of the *tidy* data is shown below:
 
