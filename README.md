@@ -1,11 +1,3 @@
-<!---
----
-title: "Getting and Cleaning Data"
-#date: "September 13, 2014"
-output: html_document
----
--->
-
 # README 
 ####run_analysis.R
 ####Getting and Cleaning Data, Coursera getdata-007
@@ -31,39 +23,39 @@ The process flow of the script reads in and parses the meta-data to set the stag
 The variable lables will be assigned to the data, and the activities translated from an identifying number to an intuitive and readable label. The data set is grouped by subject and activity, and written to a text file, `tidy.txt`.
 
 ## Code
-1. Set up the working directory and load the necessary libraries. We use the dplyr library to simplify handling the data.
+Set up the working directory and load the necessary libraries. We use the dplyr library to simplify handling the data.
 
 ```
 setwd("~/coursera/3-Data_prep/project")
 library(dplyr)
 ```
 
-2. We don't need most of the columns in original data set (X_train.txt and X_test.txt), so we will read only the columns with mean or standard deviation in the variable. This information is gleaned from the file `features.txt`. We start by reading in the `features.txt` and use *grep* to create a vector of indecies to the cols we want to keep. 
+We don't need most of the columns in original data set (X_train.txt and X_test.txt), so we will read only the columns with mean or standard deviation in the variable. This information is gleaned from the file `features.txt`. We start by reading in the `features.txt` and use *grep* to create a vector of indecies to the cols we want to keep. 
 
 ```
 features<-read.table("./Dataset/features.txt")
 keepcols<-grep("mean|std",features$V2)
 ```
 
-3. We are going to use the *keepcols* vector as a mask by setting all the data coloumn classes to "NULL" and then resetting the ones we want to keep. We Grab a sample of 5 rows from X_train and find the class of each column.
+We are going to use the *keepcols* vector as a mask by setting all the data coloumn classes to "NULL" and then resetting the ones we want to keep. We Grab a sample of 5 rows from X_train and find the class of each column.
 ```
 xtrain<-read.table("./Dataset/train/X_train.txt",nrows=5)
 classes <- sapply(xtrain, class)
 ```
-4. Now we want to set each class that we do not want to read in to "NULL" by setting a vector placeholder with NULLs and then copy the classes over that we want to keep. In this case, all the original data classes are all numeric, but we should not assume that, so we will use the original values. This keeps the code more generic.
+Now we want to set each class that we do not want to read in to "NULL" by setting a vector placeholder with NULLs and then copy the classes over that we want to keep. In this case, all the original data classes are all numeric, but we should not assume that, so we will use the original values. This keeps the code more generic.
 ```
 mycols <- rep("NULL", length(xtrain)) 
 mycols[keepcols]<-classes[keepcols]
 ```
 
-5. Now we read in the whole X_train table and skip over the cols we don't need. This helps xtrain load about 3 times faster. There are no comments in the raw data, so we can also speed things up by setting the comment.char = "".  Since the participants we divided into "train" and "test" groups, I can read `X_test.txt` in and append it to the xtrain table. (x isn't very descriptive for the combined table, but that's what's in the original data and is temporary anyway).
+Now we read in the whole X_train table and skip over the cols we don't need. This helps xtrain load about 3 times faster. There are no comments in the raw data, so we can also speed things up by setting the comment.char = "".  Since the participants we divided into "train" and "test" groups, I can read `X_test.txt` in and append it to the xtrain table. (x isn't very descriptive for the combined table, but that's what's in the original data and is temporary anyway).
 ```
 xtrain<-read.table("./Dataset/train/X_train.txt",colClasses=mycols,comment.char="")
 xtest<-read.table("./Dataset/test/X_test.txt",colClasses=mycols,comment.char="")
 x<-rbind(xtrain,xtest)
 ```
 
-6. We need need to read in the subjects and actions from both the training and test sets, similarly.
+We need need to read in the subjects and actions from both the training and test sets, similarly.
 ```
 sub_train<-read.table("./Dataset/train/subject_train.txt")
 sub_test<-read.table("./Dataset/test/subject_test.txt")
@@ -74,7 +66,7 @@ y_train<-read.table("./Dataset/train/y_train.txt")
 y_test<-read.table("./Dataset/test/y_test.txt")
 activities<-rbind(y_train,y_test)
 ```
-7. We want to change the activities from numbers to something readable. We read in the `activity_labels.txt` and create a vector with the labels. Then loop through **activities** replacing the activity number with the activity label.
+We want to change the activities from numbers to something readable. We read in the `activity_labels.txt` and create a vector with the labels. Then loop through **activities** replacing the activity number with the activity label.
 ```
 act_labels<-read.table("./Dataset/activity_labels.txt",colClasses=c("NULL","character"))
 for (i in 1:nrow(act_labels)) {
@@ -82,21 +74,21 @@ for (i in 1:nrow(act_labels)) {
 }
 ```
 
-8. At this point, one can conduct a quick check to confirm an equal number of rows by entering the following at the console. It should return a value of **TRUE**. It is commented out in the script since it is optional.
+At this point, one can conduct a quick check to confirm an equal number of rows by entering the following at the console. It should return a value of **TRUE**. It is commented out in the script since it is optional.
 ```
 # nrow(x) == nrow(subjects) & nrow(x) == nrow(activities)
 ```
 
-9. We join the the **subjects** and **activities** with the data (**x**) into one DF using *cbind* and make a little easier to work with using dplyr's *tbl_df* at the dame time.
+We join the the **subjects** and **activities** with the data (**x**) into one DF using *cbind* and make a little easier to work with using dplyr's *tbl_df* at the dame time.
 ```
 mytable<-tbl_df(cbind(subjects,activities,x))
 ```
-10. We want to give the columns meaningful names while we're at it. We use *grep* again, but insead of returning indicies into the vector, we return the actual values using *value=TRUE*, and assign that to the names of **mytable** along with "Subject" and "Activity".
+We want to give the columns meaningful names while we're at it. We use *grep* again, but insead of returning indicies into the vector, we return the actual values using *value=TRUE*, and assign that to the names of **mytable** along with "Subject" and "Activity".
 ```
 names(mytable)<-c("Subject","Activity",grep("mean|std",features$V2,value=TRUE))
 ```
 
-11. From the data set above (**mytable**), we create a second, independent tidy data set with the average of each variable and grouped by each activity for each subject. We use the *summarise_each* function to reduce each group to a single row, mutating the columns to find the mean of each activity in the process. We then write the tidied data file results to `tidy.txt`.
+From the data set above (**mytable**), we create a second, independent tidy data set with the average of each variable and grouped by each activity for each subject. We use the *summarise_each* function to reduce each group to a single row, mutating the columns to find the mean of each activity in the process. We then write the tidied data file results to `tidy.txt`.
 ```
 subs<-group_by(mytable,Subject,Activity)
 tidy<-summarise_each(subs,funs(mean))
