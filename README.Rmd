@@ -2,10 +2,13 @@
 ---
 title: "README"
 date: "September 13, 2014"
-output: html_document
+output:
+    md_document:
+    variant: markdown_github
 ---
-####run_analysis.R
-####Getting and Cleaning Data, Coursera getdata-007
+# README
+###run_analysis.R
+###Getting and Cleaning Data, Coursera getdata-007
 
 
 ## Purpose
