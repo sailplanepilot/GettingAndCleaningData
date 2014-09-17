@@ -1,4 +1,9 @@
-# README 
+
+---
+title: "README"
+date: "September 13, 2014"
+output: html_document
+---
 ####run_analysis.R
 ####Getting and Cleaning Data, Coursera getdata-007
 
@@ -30,25 +35,25 @@ setwd("~/coursera/3-Data_prep/project")
 library(dplyr)
 ```
 
-We don't need most of the columns in original data set (X_train.txt and X_test.txt), so we will read only the columns with mean or standard deviation in the variable. This information is gleaned from the file `features.txt`. We start by reading in the `features.txt` and use *grep* to create a vector of indecies to the cols we want to keep. 
+We don't need most of the columns in original data set (X_train.txt and X_test.txt), so we will read only the columns with mean or standard deviation in the variable name. This information is gleaned from the file `features.txt`. We start by reading in the `features.txt` and use *grep* to create a vector of indecies to the columns we want to keep. 
 
 ```
 features<-read.table("./Dataset/features.txt")
 keepcols<-grep("mean|std",features$V2)
 ```
 
-We are going to use the *keepcols* vector as a mask by setting all the data coloumn classes to "NULL" and then resetting the ones we want to keep. We Grab a sample of 5 rows from X_train and find the class of each column.
+We are going to use the *keepcols* vector as a mask by setting all the data column classes to "NULL" and then resetting the ones we want to keep. We grab a sample of 5 rows from X_train and find the class of each column.
 ```
 xtrain<-read.table("./Dataset/train/X_train.txt",nrows=5)
 classes <- sapply(xtrain, class)
 ```
-Now we want to set each class that we do not want to read in to "NULL" by setting a vector placeholder with NULLs and then copy the classes over that we want to keep. In this case, all the original data classes are all numeric, but we should not assume that, so we will use the original values. This keeps the code more generic.
+Now we want to set each class that we do not want to read in to "NULL" by setting a vector placeholder with NULLs and then copying the classes over that we want to keep. In this case, all the original data classes are numeric, but we should not assume that, so we will use the original values. This keeps the code more generic.
 ```
 mycols <- rep("NULL", length(xtrain)) 
 mycols[keepcols]<-classes[keepcols]
 ```
 
-Now we read in the whole X_train table and skip over the cols we don't need. This helps xtrain load about 3 times faster. There are no comments in the raw data, so we can also speed things up by setting the comment.char = "".  Since the participants we divided into "train" and "test" groups, I can read `X_test.txt` in and append it to the xtrain table. (x isn't very descriptive for the combined table, but that's what's in the original data and is temporary anyway).
+Now we read in the whole X_train table and skip over the columns we don't need. This helps xtrain load about 3 times faster. There are no comments in the raw data, so we can also speed things up by setting the comment.char = "".  Since the participants we divided into "train" and "test" groups, I can read `X_test.txt` in and append it to the xtrain table. (x isn't very descriptive for the combined table, but that's what's in the original data and is temporary anyway).
 ```
 xtrain<-read.table("./Dataset/train/X_train.txt",colClasses=mycols,comment.char="")
 xtest<-read.table("./Dataset/test/X_test.txt",colClasses=mycols,comment.char="")
@@ -74,12 +79,12 @@ for (i in 1:nrow(act_labels)) {
 }
 ```
 
-At this point, one can conduct a quick check to confirm an equal number of rows by entering the following at the console. It should return a value of **TRUE**. It is commented out in the script since it is optional.
+At this point, we can conduct a quick check to confirm an equal number of rows by entering the following at the console. It should return a value of **TRUE**. It is commented out in the script since it is optional.
 ```
 # nrow(x) == nrow(subjects) & nrow(x) == nrow(activities)
 ```
 
-We join the **subjects** and **activities** with the data (**x**) into one DF using *cbind* and make it a little easier to work with using dplyr's *tbl_df* at the dame time.
+We join the the **subjects** and **activities** with the data (**x**) into one DF using *cbind* and make a little easier to work with using dplyr's *tbl_df* at the same time.
 ```
 mytable<-tbl_df(cbind(subjects,activities,x))
 ```
